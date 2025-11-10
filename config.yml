@@ -137,14 +137,23 @@ profile: default
 respect_codeowners: true
 
 # ================================================
-# Quality Controls (Option A - MVP)
-# Enforce concise, high-quality documentation
+# Quality Controls (Hard Limits - ENFORCED)
+# Prevent enormous documentation while ensuring comprehensive coverage
 # ================================================
 quality:
+  # HARD LIMITS (Will reject generation if exceeded)
+  max_files: 10                  # Maximum 10 documentation files
+  max_lines_per_file: 300        # Hard limit per file
+  max_total_lines: 2500          # Hard limit across all files
+  enforce_limits: true           # Reject and regenerate if exceeded
+  
+  # TARGET (What we aim for)
+  target_files: 8                # Aim for 7-8 files
+  target_lines_per_file: 200     # Target 200 lines per file
+  target_total_lines: 1600       # Target ~1600 lines total
+  
   # File Length Limits
-  max_lines_per_file: 300
-  min_lines_per_file: 100
-  target_lines_per_file: 200
+  min_lines_per_file: 100        # Minimum substance required
   
   # Content Quality
   enforce_conciseness: true
@@ -156,6 +165,11 @@ quality:
   require_tl_dr: false  # Optional TL;DR sections
   max_heading_depth: 4
   require_tables_for_comparisons: true
+  
+  # Validation
+  check_duplicate_content: true
+  validate_code_syntax: true
+  validate_mermaid_diagrams: true
 
 # ================================================
 # Documentation Standards
