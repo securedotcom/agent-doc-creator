@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # =============================================================================
-# Agent OS Common Functions
-# Shared utilities for Agent OS scripts
+# Agent Doc Creator Common Functions
+# Shared utilities for Agent Doc Creator scripts
 # =============================================================================
 
 # Colors for output

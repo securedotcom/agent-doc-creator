@@ -1,0 +1,309 @@
+{
+  "agent": {
+    "id": "docs-architect-agent",
+    "name": "Docs Architect Agent",
+    "description": "Scans a repository and maintains a Docusaurus-based documentation system: architecture docs, ADRs, RFC drafts, runbooks, ML/model docs, and references. All changes are Git-based (branches + PRs) and AI-generated docs are clearly marked for human review.",
+    "owner_team": "platform-engineering",
+    "version": "1.0.0",
+    "triggers": {
+      "manual": [
+        "Run docs generation for this repo",
+        "Refresh docs after major merge"
+      ],
+      "events": [
+        "on_tag:v*",
+        "on_merge_to:main",
+        "scheduled:weekly"
+      ]
+    },
+    "inputs": [
+      {
+        "key": "repo_url",
+        "type": "string",
+        "required": true,
+        "description": "Git URL or internal repo identifier"
+      },
+      {
+        "key": "repo_local_path",
+        "type": "string",
+        "required": false,
+        "description": "If already checked out by the orchestrator"
+      },
+      {
+        "key": "target_branch",
+        "type": "string",
+        "required": false,
+        "default": "main",
+        "description": "Protected / default branch used as base for PRs"
+      },
+      {
+        "key": "config_path",
+        "type": "string",
+        "required": false,
+        "default": "docs.agent.config.json",
+        "description": "Optional per-repo agent config file"
+      }
+    ],
+    "config_defaults": {
+      "docs_root": "docs",
+      "bootstrap_docusaurus": true,
+      "use_mdx": true,
+      "sections": [
+        "architecture",
+        "adrs",
+        "rfcs",
+        "playbooks",
+        "ml",
+        "references"
+      ],
+      "create_pr": true,
+      "branch_prefix": "ai/docs-architect",
+      "run_docusaurus_build_check": true,
+      "respect_codeowners": true,
+      "incremental_updates": true,
+      "respect_human_edits": true,
+      "validate_links": true,
+      "validate_code_examples": true
+    },
+    "file_conventions": {
+      "docusaurus": {
+        "config_glob": [
+          "docusaurus.config.js",
+          "docusaurus.config.cjs",
+          "docusaurus.config.mjs",
+          "docusaurus.config.ts"
+        ],
+        "sidebars_glob": [
+          "sidebars.js",
+          "sidebars.cjs",
+          "sidebars.mjs",
+          "sidebars.ts"
+        ]
+      },
+      "structure": {
+        "intro": "docs/intro.md",
+        "architecture_dir": "docs/architecture",
+        "adrs_dir": "docs/adrs",
+        "rfcs_dir": "docs/rfcs",
+        "playbooks_dir": "docs/playbooks",
+        "ml_dir": "docs/ml",
+        "references_dir": "docs/references"
+      }
+    },
+    "capabilities": [
+      {
+        "id": "detect_or_bootstrap_docusaurus",
+        "description": "Detect existing Docusaurus. If not present and bootstrap_docusaurus=true, scaffold minimal Docusaurus config, sidebars, scripts, and docs root.",
+        "actions": [
+          "read: package.json, docusaurus.config.*, sidebars.*, docs/**",
+          "if_missing_and_allowed: add minimal Docusaurus + intro docs",
+          "never_overwrite_existing_config_without_reasoned_diff: true"
+        ]
+      },
+      {
+        "id": "repo_discovery",
+        "description": "Analyze code, IaC, CI/CD, and existing docs to infer architecture, services, dependencies, and ML components.",
+        "actions": [
+          "scan src/**, app/**, services/**, Dockerfile*, docker-compose*, k8s/**, helm/**, .github/workflows/**, .gitlab-ci.yml, terraform/**, README.md, docs/**",
+          "build_internal_model of components, deps, routes, datastores, queues, external services, ML pipelines"
+        ]
+      },
+      {
+        "id": "generate_architecture_overview",
+        "description": "Create or update docs/architecture/overview.md with system summary, component list, and a Mermaid diagram, wired into sidebars.",
+        "output_file": "docs/architecture/overview.md",
+        "rules": {
+          "must_include": [
+            "purpose",
+            "key_components",
+            "high_level_flows",
+            "tech_stack",
+            "mermaid_diagram"
+          ],
+          "idempotent_update": true,
+          "add_frontmatter": true,
+          "register_in_sidebars": true
+        }
+      },
+      {
+        "id": "generate_component_docs",
+        "description": "For each major component/service, generate docs/architecture/<name>.md.",
+        "rules": {
+          "describe": [
+            "responsibility",
+            "key_files_or_entrypoints",
+            "dependencies",
+            "data_in_out",
+            "observability",
+            "risks_or_todos"
+          ],
+          "ensure_in_sidebars_under": "Architecture",
+          "update_in_place_if_exists": true
+        }
+      },
+      {
+        "id": "generate_adrs",
+        "description": "Create ADRs (docs/adrs/NNNN-title.md) for major decisions inferred from code and config, without overwriting existing ADRs.",
+        "rules": {
+          "source_signals": [
+            "db_choice",
+            "message_broker",
+            "auth_strategy",
+            "logging_stack",
+            "infra_platform"
+          ],
+          "filename_pattern": "NNNN-kebab-title.md",
+          "fields": [
+            "title",
+            "status",
+            "context",
+            "decision",
+            "consequences",
+            "links"
+          ],
+          "register_in_sidebars_under": "ADRs",
+          "no_edit_existing_without_strong_signal": true
+        }
+      },
+      {
+        "id": "generate_rfc_drafts",
+        "description": "Create RFC drafts for significant refactors/migrations as docs/rfcs/rfc-<slug>-draft.md with AI-generated flag.",
+        "triggers": [
+          "detected_large_complexity_or_debt",
+          "infra_migration_opportunity",
+          "cross_cutting_concern"
+        ],
+        "content_template": {
+          "frontmatter": {
+            "status": "Draft",
+            "ai_generated": true
+          },
+          "sections": [
+            "Context",
+            "Problem",
+            "Proposal",
+            "Impact",
+            "Risks",
+            "Open Questions"
+          ],
+          "disclaimer_required": true,
+          "register_in_sidebars_under": "RFCs"
+        }
+      },
+      {
+        "id": "generate_runbooks",
+        "description": "Generate docs/playbooks/oncall.md and per-service runbooks where possible.",
+        "rules": {
+          "include": [
+            "how_to_run_locally",
+            "build_and_deploy",
+            "logs_and_metrics",
+            "health_checks",
+            "common_failures",
+            "rollback_guidance"
+          ],
+          "insert_todos_for_missing_info": true,
+          "register_in_sidebars_under": "Runbooks"
+        }
+      },
+      {
+        "id": "generate_ml_docs",
+        "description": "If ML/AI code detected, generate ML docs under docs/ml/.",
+        "conditions": {
+          "repo_contains_ml_code": true
+        },
+        "outputs": [
+          "datasets.md",
+          "model-card-<name>.md",
+          "evals.md"
+        ],
+        "register_in_sidebars_under": "ML & Models"
+      },
+      {
+        "id": "generate_references",
+        "description": "Generate docs/references/config-index.md and env-vars.md summarizing configs and environment variables (without exposing secrets).",
+        "rules": {
+          "list_config_files_and_roles": true,
+          "list_env_var_names_and_meaning": true,
+          "redact_possible_secrets": true,
+          "register_in_sidebars_under": "References"
+        }
+      },
+      {
+        "id": "update_sidebars",
+        "description": "Ensure all generated docs are discoverable in sidebars.",
+        "rules": {
+          "preserve_existing_structure": true,
+          "add_new_categories_if_missing": [
+            "Architecture",
+            "ADRs",
+            "RFCs",
+            "Runbooks",
+            "ML & Models",
+            "References"
+          ],
+          "avoid_duplicates": true
+        }
+      },
+      {
+        "id": "validate_docs",
+        "description": "Validate generated documentation for errors.",
+        "checks": [
+          "internal_links",
+          "external_links",
+          "code_examples",
+          "mermaid_diagrams",
+          "frontmatter",
+          "docusaurus_build"
+        ]
+      },
+      {
+        "id": "preserve_human_edits",
+        "description": "Detect and preserve manually edited sections.",
+        "rules": {
+          "check_human_reviewed_flag": true,
+          "check_edit_markers": true,
+          "store_in_metadata": ".human-edits.json",
+          "merge_preserved_content": true
+        }
+      },
+      {
+        "id": "incremental_updates",
+        "description": "Only regenerate documentation for changed components.",
+        "rules": {
+          "track_file_hashes": true,
+          "detect_changed_components": true,
+          "skip_unchanged_docs": true,
+          "store_metadata": ".docs-metadata.json"
+        }
+      },
+      {
+        "id": "open_pr_with_changes",
+        "description": "Prepare a clean PR instead of direct pushes.",
+        "rules": {
+          "branch_name_pattern": "{branch_prefix}-{date}-{short_hash}",
+          "title": "Docs: AI-generated architecture & operations documentation",
+          "body_must_include": [
+            "summary_of_changes",
+            "list_of_new_or_updated_files",
+            "disclaimer_block",
+            "validation_results",
+            "review_checklist"
+          ],
+          "respect_codeowners_for_review": true
+        }
+      }
+    ],
+    "guardrails": [
+      "Never print or commit actual secret values; redact and flag instead.",
+      "Always add a clear AI-generated disclaimer at the top or in frontmatter.",
+      "Do not delete or heavily rewrite human-authored docs without strong signals.",
+      "Do not push directly to protected branches.",
+      "If information is uncertain, mark with TODO and avoid hallucinated specifics."
+    ],
+    "ai_generated_disclaimer": "> ⚠️ **AI-Generated Documentation**\n> This page was generated or updated by an AI agent.\n> Please review and approve before treating it as canonical documentation.\n"
+  }
+}
+
+
+

@@ -1,56 +1,173 @@
-version: 2.1.1
+version: 1.0.0
 base_install: true
 
-
 # CONFIGURATION
-# Configure defaults for the tools you use and how Agent OS should compile commands for your projects.
-
+# Configure defaults for Agent Doc Creator and how it should generate documentation for your projects.
 
 # ================================================
-# Do you use Claude Code?
-# Set to true to install commands in your project's .claude/commands/agent-os/ folder
-#
-# Override this default when running project-install.sh by using the flag --claude-code-commands=true/false
+# Documentation Root Directory
+# Where Docusaurus docs are located in target projects
+# ================================================
+docs_root: docs
+
+# ================================================
+# Bootstrap Docusaurus
+# Automatically set up Docusaurus if not present in target project
+# ================================================
+bootstrap_docusaurus: true
+
+# ================================================
+# Use MDX Format
+# Enable MDX for interactive documentation components
+# ================================================
+use_mdx: true
+
+# ================================================
+# Documentation Sections
+# Which types of documentation to generate
+# Available: architecture, adrs, rfcs, playbooks, ml, references
+# ================================================
+sections:
+  - architecture
+  - adrs
+  - rfcs
+  - playbooks
+  - ml
+  - references
+
+# ================================================
+# Git Workflow Settings
+# ================================================
+
+# Create Pull Request
+# Submit documentation changes as PRs instead of direct commits
+create_pr: true
+
+# Branch Prefix
+# Prefix for documentation branches (e.g., ai/docs-architect-2024-11-07)
+branch_prefix: ai/docs-architect
+
+# Target Branch
+# Default branch to create PRs against
+target_branch: main
+
+# ================================================
+# Validation Settings
+# ================================================
+
+# Run Docusaurus Build Check
+# Verify documentation builds successfully before creating PR
+run_docusaurus_build_check: true
+
+# Validate Links
+# Check for broken internal and external links
+validate_links: true
+
+# Validate Code Examples
+# Verify code examples have valid syntax
+validate_code_examples: true
+
+# ================================================
+# Human Edit Preservation
+# ================================================
+
+# Respect Human Edits
+# Preserve manually edited sections during regeneration
+respect_human_edits: true
+
+# Human Edit Markers
+# Comment markers to protect content from regeneration
+human_edit_start: "<!-- HUMAN_EDIT_START -->"
+human_edit_end: "<!-- HUMAN_EDIT_END -->"
+
+# ================================================
+# Incremental Updates
+# ================================================
+
+# Enable Incremental Updates
+# Only regenerate docs for changed components
+incremental_updates: true
+
+# Force Full Regeneration
+# Override incremental mode (can be set via CLI flag)
+force_full_regeneration: false
+
+# ================================================
+# Claude Code Integration
+# Set to true to install commands in your project's .claude/commands/agent-doc-creator/ folder
+# Override when running project-install.sh with --claude-code-commands=true/false
 # ================================================
 claude_code_commands: true
 
-
 # ================================================
-# Do you use other coding tools (Cursor, Windsurf, etc.)?
-# Set to true to install commands in your project's agent-os/commands/ folder
-#
-# Override this default when running project-install.sh by using the flag --agent-os-commands true/false
-# ================================================
-agent_os_commands: false
-
-
-# ================================================
-# Do you want Claude Code to use subagents?
-# Set to true to install agents in .claude/agents/agent-os/ and have commands delegate to them
+# Use Claude Code Subagents
+# Set to true to delegate tasks to specialized Claude Code subagents
 # Requires claude_code_commands: true
-#
-# Override this default when running project-install.sh by using the flag --use-claude-code-subagents true/false
+# Override when running project-install.sh with --use-claude-code-subagents true/false
 # ================================================
 use_claude_code_subagents: true
 
+# ================================================
+# Other AI Coding Tools
+# Set to true to install commands in your project's agent-doc-creator/commands/ folder
+# Override when running project-install.sh with --agent-doc-creator-commands true/false
+# ================================================
+agent_doc_creator_commands: false
 
 # ================================================
-# Should standards be provided to Claude Code as Skills?
-# Set to true to use Claude Code's Skills feature for reading standards
-# Set to false to inject standards as file references in command prompts
-# Requires claude_code_commands: true (automatically treated as false if claude_code_commands is false)
-#
-# Override this default when running project-install.sh by using the flag --standards-as-claude-code-skills true/false
+# AI Disclaimer Template
+# Disclaimer added to all AI-generated documentation
 # ================================================
-standards_as_claude_code_skills: false
-
+ai_disclaimer: |
+  > ⚠️ **AI-Generated Documentation**
+  > This page was generated or updated by an AI agent.
+  > Please review and approve before treating it as canonical documentation.
 
 # ================================================
 # PROFILE
-#
-# Use this profile by default.
-#
-# Override this default when running project-install.sh by using the flag --profile [profile-name]
+# Use this profile by default
+# Override when running project-install.sh with --profile [profile-name]
 # ================================================
-
 profile: default
+
+# ================================================
+# Code Owners Respect
+# Respect CODEOWNERS file when assigning PR reviewers
+# ================================================
+respect_codeowners: true
+
+# ================================================
+# Quality Controls (Option A - MVP)
+# Enforce concise, high-quality documentation
+# ================================================
+quality:
+  # File Length Limits
+  max_lines_per_file: 300
+  min_lines_per_file: 100
+  target_lines_per_file: 200
+  
+  # Content Quality
+  enforce_conciseness: true
+  require_actionable_content: true
+  require_code_examples: true
+  progressive_disclosure: true  # Start with overview, link to details
+  
+  # Structure Requirements
+  require_tl_dr: false  # Optional TL;DR sections
+  max_heading_depth: 4
+  require_tables_for_comparisons: true
+
+# ================================================
+# Documentation Standards
+# Define the style and tone of generated docs
+# ================================================
+standards:
+  style: "concise"  # concise | comprehensive | minimal
+  audience: "developer"  # developer | ops | executive | all
+  tone: "professional"  # professional | casual | technical
+  
+  # FAANG Best Practices
+  scannable: true  # Use headings, bullets, tables
+  actionable: true  # Every doc answers "what can I do?"
+  no_duplication: true  # Link instead of rewriting
+  single_source_of_truth: true
