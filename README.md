@@ -20,7 +20,7 @@ A prompt-pack, standards library, and workflow system for generating **concise, 
 
 **Current Reality**: This is a **v0 prompt-pack**, not a standalone CLI tool. You need Cursor IDE and manual execution. See [ARCHITECTURE.md](ARCHITECTURE.md) for technical reality.
 
-> ⚠️ **Security Warning**: If your repo contains secrets, regulated data (HIPAA/PCI DSS), or proprietary IP, **do not use this yet**. All code is sent to Anthropic API. See [DATA_FLOW.md](DATA_FLOW.md) for complete privacy analysis.
+> ⚠️ **Not yet recommended for regulated / crown-jewel repos.** All code is sent to Anthropic API. See [DATA_FLOW.md](DATA_FLOW.md) before using in production.
 
 ## Proven Results
 
@@ -99,21 +99,23 @@ graph TD
 
 ## What It Does
 
-Agent Doc Creator transforms your codebase into living documentation by:
+Provides a repo-scanning + generation workflow for Claude/Cursor that can propose comprehensive documentation when wired into your editor:
 
-✅ **Scanning your repository** to discover components, services, and dependencies
+✅ **Scans your repository** to discover components, services, and dependencies
 
-✅ **Generating architecture documentation** with Mermaid diagrams and component details
+✅ **Generates architecture documentation** with Mermaid diagrams and component details
 
-✅ **Creating ADRs** (Architecture Decision Records) from detected technical decisions
+✅ **Creates ADRs** (Architecture Decision Records) from detected technical decisions
 
-✅ **Drafting RFCs** for identified refactoring opportunities
+✅ **Drafts RFCs** for identified refactoring opportunities
 
-✅ **Building runbooks** for operational procedures and troubleshooting
+✅ **Builds runbooks** for operational procedures and troubleshooting
 
-✅ **Documenting ML models** with model cards, datasets, and evaluation metrics
+✅ **Documents ML models** with model cards, datasets, and evaluation metrics
 
-✅ **Maintaining references** for configuration files and environment variables
+✅ **Maintains references** for configuration files and environment variables
+
+> **Note**: These behaviors are defined in the spec ([docs.agent.config.json](docs.agent.config.json)); full automation is in progress. Current v0 requires manual execution in Cursor IDE.
 
 ## Why Agent Doc Creator?
 
@@ -139,16 +141,18 @@ See [STANDARDS.md](STANDARDS.md) for specific patterns from Google, Stripe, and 
 
 ### ✅ Quality Controls
 
-| Feature | Status | Implementation |
-|---------|--------|----------------|
-| **Length enforcement** | ✅ Implemented | Max 300 lines/file, 2,500 total (via prompts) |
-| **Structure validation** | ✅ Implemented | Ensures headings, tables, code blocks (via prompts) |
-| **AI disclaimers** | ✅ Implemented | All generated docs marked as AI-generated |
-| **Conciseness** | ✅ Implemented | Target 200-300 lines per file (enforced by prompts) |
-| **Link validation** | ❌ Roadmap | Automated broken link detection (not implemented) |
-| **Code syntax checking** | ❌ Roadmap | Linter integration for code examples (not implemented) |
-| **Incremental updates** | ❌ Roadmap | Only regenerate changed docs (not implemented) |
-| **Edit preservation** | ❌ Roadmap | Preserve human changes via frontmatter (not implemented) |
+| Capability | Status | Method |
+|------------|--------|--------|
+| **Line limits** | ✅ Implemented | Prompt-enforced (300/file, 2,500 total) |
+| **Doc shapes / sections** | ✅ Implemented | Profile templates (architecture, ADRs, etc) |
+| **AI disclaimers** | ✅ Implemented | Prompt-enforced frontmatter |
+| **Conciseness** | ✅ Implemented | Prompt conventions (tables, bullets, no duplication) |
+| **Link validation** | ❌ Roadmap | Tool-enforced (not yet implemented) |
+| **Code syntax checking** | ❌ Roadmap | Tool-enforced (not yet implemented) |
+| **Incremental updates** | ❌ Roadmap | Tool-enforced (not yet implemented) |
+| **Edit preservation** | ❌ Roadmap | Tool-enforced (not yet implemented) |
+
+**Legend**: Prompt-enforced = LLM instructions in agent profiles; Tool-enforced = Automated validation scripts
 
 See [STANDARDS.md](STANDARDS.md) for complete implementation status.
 
