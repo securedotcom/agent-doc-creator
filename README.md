@@ -24,10 +24,12 @@ A prompt-pack, standards library, and workflow system for generating **concise, 
 
 ## Proven Results
 
+⚠️ **Sends your code to Anthropic's API. Recommended only for non-sensitive / OSS repos. See [DATA_FLOW.md](DATA_FLOW.md).**
+
 ✅ **Generated 1,462 lines** of comprehensive documentation for [secure_data_retrieval_agent](https://github.com/securedotcom/secure_data_retrieval_agent/pull/3)
 - 5 focused documents (architecture, best practices, 2 ADRs, configuration)
 - All files 245-317 lines (within target)
-- **80% reduction** in developer onboarding time[^1]
+- **80% reduction** in developer onboarding time[^1] in an internal case study
 - Complete coverage: LangGraph agent, SQL generation, multi-tenant architecture
 
 See [examples/](examples/) for before/after comparison.
@@ -248,6 +250,8 @@ This will:
 4. Configure Git workflow for documentation PRs
 
 ## Usage
+
+> **Important**: This repo installs agent configs + workflows. The actual generation runs via Claude Code / Cursor using those assets; it's **not a standalone binary** you can execute directly.
 
 ### With Claude Code
 
