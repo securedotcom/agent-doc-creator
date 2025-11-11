@@ -2,9 +2,23 @@
 
 **AI-powered documentation generator for modern software projects.**
 
-Automatically scans your repository and generates **concise, comprehensive, actionable** documentation. Built for developers who value quality over quantity.
+A prompt-pack, standards library, and workflow system for generating **concise, comprehensive, actionable** documentation using Claude/Cursor. Built for developers who value quality over quantity.
 
 **Key Differentiator**: Generates 200-300 line docs, not 2000-line docs. Every file is focused, every section is actionable.
+
+## Current State vs Roadmap
+
+| Feature | v0 (Current) | v1 (Planned) | v2 (Future) |
+|---------|--------------|--------------|-------------|
+| **Core** | Prompt-pack + standards for Cursor IDE | Standalone CLI | Multi-repo support |
+| **Automation** | Manual workflow (human-in-loop) | Automated generation | Scheduled runs |
+| **Privacy** | ⚠️ Sends code to Anthropic API | Local model support (Ollama) | Enterprise deployment |
+| **Security** | ❌ No secret detection | ✅ Pre-flight secret scan | Audit logging |
+| **Validation** | Line counting only | Link/code/diagram validation | Quality gates |
+| **Edit Preservation** | ❌ Manual review required | ✅ Frontmatter markers | Git-aware diffing |
+| **Use Case** | Open-source, non-sensitive repos | Private repos (local models) | Enterprise/regulated |
+
+**Current Reality**: This is a **v0 prompt-pack**, not a standalone CLI tool. You need Cursor IDE and manual execution. See [ARCHITECTURE.md](ARCHITECTURE.md) for technical reality.
 
 ## Proven Results
 
@@ -143,37 +157,49 @@ See [STANDARDS.md](STANDARDS.md) for specific patterns from Google, Stripe, and 
 - **ML Documentation**: Model cards, dataset descriptions, evaluation metrics
 - **References**: Configuration indexes, environment variables, API references
 
-## How It Works
+## How It Works (v0 - Manual Process)
 
-### 1. Repository Scanning
-- Analyzes README, package.json, pyproject.toml, docker-compose.yml
-- Searches codebase for patterns (services, controllers, models, agents)
-- Identifies project type (API, agent, pipeline, web app)
-- Maps architecture and dependencies
+### Current Reality: Cursor IDE Workflow
 
-### 2. AI-Powered Generation
-- Uses Claude Sonnet 4.5 for intelligent analysis
-- Generates architecture overviews with Mermaid diagrams
-- Creates best practices guides with real examples
-- Documents ADRs for major design decisions
-- Builds configuration references
+This is **not automated**. You execute steps manually in Cursor IDE:
 
-### 3. Quality Controls
-- **Hard limits**: Max 10 files, 300 lines/file, 2,500 lines total
-- **Structure validation**: Ensures headings, tables, code examples
-- **Conciseness**: Every file 200-300 lines (scannable)
-- **Actionability**: Copy-paste ready commands
+1. **Clone & Navigate**
+   ```bash
+   git clone <repo-url>
+   cd <repo>
+   ```
 
-### 4. Git Workflow
-- Creates feature branch
-- Generates documentation files
-- Commits with clear AI disclaimer
-- Opens pull request for human review
+2. **Scan Repository** (Manual)
+   - Read README, package.json, pyproject.toml, docker-compose.yml
+   - Use `grep` and `codebase_search` to find patterns
+   - Build mental model of architecture
 
-**Time**: ~15 minutes per repository  
+3. **Generate Docs** (Manual)
+   - Use prompts from `profiles/default/agents/` to guide Claude
+   - Generate architecture overview, best practices, ADRs, configuration
+   - Enforce limits: Max 10 files, 300 lines/file, 2,500 lines total
+
+4. **Create PR** (Manual)
+   - Create branch: `git checkout -b ai/docs-comprehensive-$(date +%Y%m%d)`
+   - Commit: `git add docs/ && git commit -m "docs: Add comprehensive documentation"`
+   - Push: `git push origin <branch>`
+   - Open PR: `gh pr create --title "..." --body "..."`
+
+**Time**: ~15 minutes per repository (with human oversight)  
 **Cost**: ~$8 per repository (based on ~50K LOC Python repo with Claude Sonnet 4.5)
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for technical details and [DATA_FLOW.md](DATA_FLOW.md) for privacy considerations.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for complete technical reality.
+
+### v1 Vision: Standalone CLI (Not Yet Implemented)
+
+```bash
+# Future vision (not current reality)
+npm install -g agent-doc-creator
+agent-doc-creator generate --repo . --output docs/
+agent-doc-creator validate --check-links --check-code
+```
+
+**Roadmap**: See [Current State vs Roadmap](#current-state-vs-roadmap) table above.
 
 ## Installation
 
@@ -254,18 +280,43 @@ respect_human_edits: true
 
 Add `docs.agent.config.json` to your project root for project-specific settings.
 
-## Important Notes
+## ⚠️ Important Limitations (v0)
 
-### Current Scope
-- **Tested on**: AI agents, data pipelines (see [examples/](examples/))
-- **Platform**: Requires Cursor IDE with Claude integration
-- **Privacy**: Code sent to Anthropic API (see [DATA_FLOW.md](DATA_FLOW.md))
-- **Edit preservation**: Not yet implemented - review PRs before merging
+### Security & Privacy
+- **🔴 HIGH RISK**: Sends entire codebase to Anthropic API (external service)
+- **❌ No secret detection**: Hardcoded credentials will be sent to API
+- **❌ No allowlist/denylist**: Cannot exclude sensitive paths
+- **❌ No audit logging**: No record of what was sent
 
-### Roadmap
-- **Current**: Single-repo documentation generation
-- **Next**: Incremental updates (preserve human edits)
-- **Future**: Local model support, automated validation, multi-repo cross-references
+**DO NOT USE** on:
+- Repos with hardcoded secrets
+- Proprietary algorithms or trade secrets
+- Healthcare (HIPAA), financial (PCI DSS), or government code
+- Any regulated/sensitive codebase
+
+**Safe for**: Open-source repos, learning projects, non-sensitive internal tools
+
+See [DATA_FLOW.md](DATA_FLOW.md) for complete privacy analysis.
+
+### Technical Limitations
+- **Not a CLI tool**: Requires Cursor IDE, manual execution
+- **No automation**: Human-in-loop for every step
+- **No validation**: Only line counting works (link checking, code syntax validation not implemented)
+- **No edit preservation**: Will overwrite human changes - review PRs carefully
+
+### What This Actually Is
+- ✅ Prompt-pack with standards and workflows
+- ✅ Installation scripts for project setup
+- ✅ Quality guidelines (STANDARDS.md)
+- ❌ Not a standalone CLI you can `npm install` or `pip install`
+- ❌ Not automated (yet)
+
+### Roadmap to v1 (Standalone CLI)
+1. **generate-docs** command (Python/Node)
+2. **Pre-flight secret scan** (TruffleHog/gitleaks integration)
+3. **Local model support** (Ollama for privacy)
+4. **Real validation** (link checking, code syntax, diagram validation)
+5. **Edit preservation** (frontmatter markers, git-aware diffing)
 
 ## Requirements
 
