@@ -1,6 +1,18 @@
 # Agent Doc Creator
 
-**FAANG-quality documentation generator for modern software projects.**
+> ⚠️ **ALPHA STAGE - NOT PRODUCTION READY**
+>
+> This tool is in early development. Current limitations:
+> - **Tested on 1 production repository** (secure_data_retrieval_agent)
+> - **No edit preservation** - Will overwrite human changes to generated docs
+> - **Privacy risk** - Sends code to external LLM (Claude via Anthropic)
+> - **No local model support** - Cannot run offline or with private models
+> - **Installation not verified** - Scripts may need manual fixes
+> - **Token costs unknown** - No estimates for different repo sizes
+>
+> See [Current Status](#current-status) for details.
+
+**Documentation generator for modern software projects.**
 
 Agent Doc Creator automatically scans your repository and generates **concise, actionable, scannable** documentation. Built for developers who value quality over quantity.
 
@@ -32,11 +44,13 @@ Agent Doc Creator transforms your codebase into living documentation by:
 - **Scannable**: Tables, bullets, code examples
 - **Actionable**: Copy-paste ready commands
 
-### 🎯 FAANG-Quality Standards
+### 🎯 Quality Standards (Goal)
 - **Progressive disclosure**: Overview → details
 - **No duplication**: Link instead of rewrite
 - **Code examples**: Always included
 - **Tables for comparisons**: Not walls of text
+
+> **Note**: "FAANG-quality" is aspirational. See [STANDARDS.md](STANDARDS.md) for specific patterns we're implementing (coming soon).
 
 ### 🔄 Git-Based Workflow
 - All changes via pull requests
@@ -44,16 +58,17 @@ Agent Doc Creator transforms your codebase into living documentation by:
 - Clear AI disclaimers
 - Respects CODEOWNERS
 
-### ✅ Built-in Validation
-- Broken link detection
-- Code syntax checking
-- Duplicate content detection
-- Length enforcement (no 1000-line docs!)
+### ✅ Quality Controls (Partial)
+- ✅ Length enforcement (max 300 lines/file, 2,500 total)
+- ✅ Line counting and structure validation
+- ❌ Broken link detection (planned, not implemented)
+- ❌ Code syntax checking (planned, not implemented)
+- ❌ Duplicate content detection (planned, not implemented)
 
-### 📊 Incremental Updates
-- Only regenerate what changed
-- Preserve human edits
-- Track documentation freshness
+### 📊 Incremental Updates (Planned)
+- ❌ Only regenerate what changed (not implemented)
+- ❌ Preserve human edits (not implemented - will overwrite!)
+- ❌ Track documentation freshness (not implemented)
 
 ## Documentation Types
 
@@ -63,6 +78,51 @@ Agent Doc Creator transforms your codebase into living documentation by:
 - **Runbooks**: Operational procedures, deployment guides, troubleshooting
 - **ML Documentation**: Model cards, dataset descriptions, evaluation metrics
 - **References**: Configuration indexes, environment variables, API references
+
+## Current Status
+
+### ✅ What Works
+
+- **Generated comprehensive docs** for 1 production repository ([secure_data_retrieval_agent](https://github.com/securedotcom/secure_data_retrieval_agent/pull/3))
+  - 5 files, 1,462 lines total
+  - Architecture overview (268 lines)
+  - Best practices guide (317 lines)
+  - 2 ADRs (245 + 317 lines)
+  - Configuration reference (315 lines)
+- **Hard limits enforced**: Max 10 files, 300 lines/file, 2,500 total
+- **Quality controls**: Line counting, structure validation
+
+### ❌ What Doesn't Work Yet
+
+- **Installation scripts** - Contain placeholder URLs, not tested end-to-end
+- **Edit preservation** - Will overwrite human changes (not implemented)
+- **Validation claims** - Only line counting works; broken link detection, code syntax checking not implemented
+- **General-purpose claim** - Only tested on 1 LangGraph-based AI agent repo
+- **Privacy controls** - No local model support, all code sent to external LLM
+- **Performance data** - No benchmarks for different repo sizes
+- **Examples** - No before/after samples to evaluate quality
+
+### 🚧 In Progress
+
+- [ ] Create `STANDARDS.md` with specific documentation patterns from Google, Stripe, AWS
+- [ ] Add `/examples` folder with 3 real before/after samples
+- [ ] Fix installation scripts with real URLs
+- [ ] Document actual architecture (how scanning, AI, validation work)
+- [ ] Add data flow diagram with privacy/security details
+- [ ] Test on 2+ diverse repositories (REST API, React app)
+
+### 📊 Honest Metrics
+
+| Claim | Reality | Status |
+|-------|---------|--------|
+| "FAANG-quality" | Undefined, aspirational | ❌ Marketing fluff |
+| "General-purpose" | Tested on 1 repo | ❌ Unproven |
+| "Built-in validation" | Only line counting | ❌ Oversold |
+| "Preserves edits" | Not implemented | ❌ Vaporware |
+| "Broken link detection" | Not implemented | ❌ Claimed but missing |
+| "Code syntax checking" | Not implemented | ❌ Claimed but missing |
+| Generated 1,462 lines | Actually works | ✅ Real |
+| Hard limits enforced | Actually works | ✅ Real |
 
 ## Installation
 
