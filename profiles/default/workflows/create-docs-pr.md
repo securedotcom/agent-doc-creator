@@ -215,7 +215,7 @@ After merging:
 
 ## 📚 Documentation
 
-- [Agent Doc Creator](https://github.com/yourusername/agent-doc-creator)
+- [Agent Doc Creator](https://github.com/securedotcom/agent-doc-creator)
 - [Documentation Standards](docs/standards/)
 - [Contributing Guide](CONTRIBUTING.md)
 
