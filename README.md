@@ -94,7 +94,7 @@ Agent Doc Creator transforms your codebase into living documentation by:
 
 ### ❌ What Doesn't Work Yet
 
-- **Installation scripts** - Contain placeholder URLs, not tested end-to-end
+- **Installation not fully automated** - Requires Cursor IDE, not standalone CLI
 - **Edit preservation** - Will overwrite human changes (not implemented)
 - **Validation claims** - Only line counting works; broken link detection, code syntax checking not implemented
 - **General-purpose claim** - Only tested on 1 LangGraph-based AI agent repo
@@ -131,8 +131,12 @@ Agent Doc Creator transforms your codebase into living documentation by:
 Install Agent Doc Creator to your system:
 
 ```bash
-cd ~
-curl -sSL https://raw.githubusercontent.com/yourusername/agent-doc-creator/main/scripts/base-install.sh | bash
+# Clone the repository
+git clone https://github.com/securedotcom/agent-doc-creator.git
+cd agent-doc-creator
+
+# Run base installation
+./scripts/base-install.sh
 ```
 
 This creates `~/agent-doc-creator/` with:
