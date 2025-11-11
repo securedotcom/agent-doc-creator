@@ -20,6 +20,8 @@ A prompt-pack, standards library, and workflow system for generating **concise, 
 
 **Current Reality**: This is a **v0 prompt-pack**, not a standalone CLI tool. You need Cursor IDE and manual execution. See [ARCHITECTURE.md](ARCHITECTURE.md) for technical reality.
 
+> ⚠️ **Security Warning**: If your repo contains secrets, regulated data (HIPAA/PCI DSS), or proprietary IP, **do not use this yet**. All code is sent to Anthropic API. See [DATA_FLOW.md](DATA_FLOW.md) for complete privacy analysis.
+
 ## Proven Results
 
 ✅ **Generated 1,462 lines** of comprehensive documentation for [secure_data_retrieval_agent](https://github.com/securedotcom/secure_data_retrieval_agent/pull/3)
@@ -136,17 +138,21 @@ See [STANDARDS.md](STANDARDS.md) for specific patterns from Google, Stripe, and 
 - Respects CODEOWNERS
 
 ### ✅ Quality Controls
-- **Length enforcement**: Max 300 lines/file, 2,500 lines total
-- **Structure validation**: Ensures proper headings, tables, code blocks
-- **Conciseness**: Target 200-300 lines per file
-- **Actionability**: Copy-paste ready commands and examples
 
-### 📊 Incremental Updates
-- Regenerate only what changed
-- Preserve human edits
-- Track documentation freshness
+| Feature | Status | Implementation |
+|---------|--------|----------------|
+| **Length enforcement** | ✅ Implemented | Max 300 lines/file, 2,500 total (via prompts) |
+| **Structure validation** | ✅ Implemented | Ensures headings, tables, code blocks (via prompts) |
+| **AI disclaimers** | ✅ Implemented | All generated docs marked as AI-generated |
+| **Conciseness** | ✅ Implemented | Target 200-300 lines per file (enforced by prompts) |
+| **Link validation** | ❌ Roadmap | Automated broken link detection (not implemented) |
+| **Code syntax checking** | ❌ Roadmap | Linter integration for code examples (not implemented) |
+| **Incremental updates** | ❌ Roadmap | Only regenerate changed docs (not implemented) |
+| **Edit preservation** | ❌ Roadmap | Preserve human changes via frontmatter (not implemented) |
 
-> **Note**: Review all PRs before merging to ensure quality.
+See [STANDARDS.md](STANDARDS.md) for complete implementation status.
+
+> **Note**: Currently regenerates all docs from scratch. Review all PRs before merging to prevent overwriting human edits.
 
 ## Documentation Types
 
