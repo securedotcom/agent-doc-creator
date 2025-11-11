@@ -11,10 +11,75 @@ Automatically scans your repository and generates **concise, comprehensive, acti
 ✅ **Generated 1,462 lines** of comprehensive documentation for [secure_data_retrieval_agent](https://github.com/securedotcom/secure_data_retrieval_agent/pull/3)
 - 5 focused documents (architecture, best practices, 2 ADRs, configuration)
 - All files 245-317 lines (within target)
-- **80% reduction** in developer onboarding time (2-3 days → 4-6 hours)
+- **80% reduction** in developer onboarding time[^1]
 - Complete coverage: LangGraph agent, SQL generation, multi-tenant architecture
 
 See [examples/](examples/) for before/after comparison.
+
+<details>
+<summary><b>📄 View Sample Generated Output (Architecture Overview - First 100 lines)</b></summary>
+
+```markdown
+# Architecture Overview
+
+**Last Updated**: 2024-11-10
+**AI Generated**: Yes (requires human review)
+
+## Purpose
+
+Secure Data Retrieval Agent is an AI-powered system that converts natural 
+language queries into SQL, executes them against a Trino data warehouse, and 
+returns results via a streaming API. It uses LangGraph for agent orchestration 
+and AWS Bedrock for LLM inference.
+
+## Key Features
+
+- **Natural Language to SQL**: Converts user queries to SQL using LLM-powered 
+  multi-step reasoning
+- **LangGraph Orchestration**: State machine-based agent workflow with checkpointing
+- **Dual Query Modes**: Dynamic query generation and template-based queries
+- **Streaming Responses**: Server-Sent Events (SSE) for real-time feedback
+- **Multi-Tenant**: Tenant-isolated data access via `x-tenant-id` header
+- **Export to S3**: Large result sets exported to S3 for download
+- **Response Scoring**: LLM-based quality assessment of retrieved data
+- **Layered Architecture**: Clean separation of Domain, Infra, Application, and 
+  Interface layers
+
+## System Architecture
+
+```mermaid
+graph TD
+    A[Client] -->|HTTP POST /api/v1/chats| B[Interface Layer]
+    B -->|x-tenant-id header| C[InitiateChatController]
+    C -->|StateModel| D[LangGraph Agent]
+    
+    subgraph "LangGraph Workflow"
+        D --> E[GenerateQueryNode]
+        E -->|3-step LLM| F{Query Type?}
+        F -->|Dynamic| G[Identify Tables]
+        G --> H[Identify Columns]
+        H --> I[Identify Filters]
+        ...
+    end
+```
+
+## Core Components
+
+| Component | Type | Purpose | Technology |
+|-----------|------|---------|------------|
+| **LangGraph Agent** | Orchestrator | State machine workflow | LangGraph 0.5+ |
+| **GenerateQueryNode** | Node | Converts NL to SQL | AWS Bedrock |
+| **ReturnResourcesNode** | Node | Executes SQL | Trino, aiotrino |
+| **ExportResourcesNode** | Node | Uploads to S3 | S3, aioboto3 |
+...
+```
+
+**Full document**: 268 lines with complete system architecture, data flows, and technology stack.  
+**View complete output**: [secure_data_retrieval_agent PR #3](https://github.com/securedotcom/secure_data_retrieval_agent/pull/3/files)
+
+</details>
+
+[^1]: Onboarding time reduction measured by comparing time for new developer to understand system architecture, design decisions, and configuration before (reading code only: 2-3 days) vs after (reading generated docs: 4-6 hours). See [examples/secure_data_retrieval_agent/](examples/secure_data_retrieval_agent/) for detailed comparison.
 
 ## What It Does
 
@@ -106,9 +171,9 @@ See [STANDARDS.md](STANDARDS.md) for specific patterns from Google, Stripe, and 
 - Opens pull request for human review
 
 **Time**: ~15 minutes per repository  
-**Cost**: ~$8 per repository (Claude API)
+**Cost**: ~$8 per repository (based on ~50K LOC Python repo with Claude Sonnet 4.5)
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for technical details.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for technical details and [DATA_FLOW.md](DATA_FLOW.md) for privacy considerations.
 
 ## Installation
 
