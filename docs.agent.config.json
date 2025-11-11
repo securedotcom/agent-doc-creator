@@ -1,4 +1,5 @@
 {
+  "_comment": "This is the specification for how an orchestrator/agent should behave. This repo (v0) does not include that orchestrator yet - it provides prompts and workflows for manual execution in Cursor IDE. See ARCHITECTURE.md for current implementation.",
   "agent": {
     "id": "docs-architect-agent",
     "name": "Docs Architect Agent",

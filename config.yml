@@ -53,22 +53,27 @@ target_branch: main
 
 # ================================================
 # Validation Settings
+# NOTE: These flags describe intended behavior for an external orchestrator/agent.
+# Not all validation features are fully implemented in this v0 release.
+# See STANDARDS.md for current implementation status.
 # ================================================
 
 # Run Docusaurus Build Check
 # Verify documentation builds successfully before creating PR
 run_docusaurus_build_check: true
 
-# Validate Links
+# Validate Links (ROADMAP - not yet implemented)
 # Check for broken internal and external links
 validate_links: true
 
-# Validate Code Examples
+# Validate Code Examples (ROADMAP - not yet implemented)
 # Verify code examples have valid syntax
 validate_code_examples: true
 
 # ================================================
-# Human Edit Preservation
+# Human Edit Preservation (ROADMAP - not yet implemented)
+# These settings define how an orchestrator should preserve human edits.
+# Currently: Manual PR review required to prevent overwriting edits.
 # ================================================
 
 # Respect Human Edits
@@ -81,7 +86,8 @@ human_edit_start: "<!-- HUMAN_EDIT_START -->"
 human_edit_end: "<!-- HUMAN_EDIT_END -->"
 
 # ================================================
-# Incremental Updates
+# Incremental Updates (ROADMAP - not yet implemented)
+# Currently: Regenerates all docs from scratch.
 # ================================================
 
 # Enable Incremental Updates
@@ -166,7 +172,7 @@ quality:
   max_heading_depth: 4
   require_tables_for_comparisons: true
   
-  # Validation
+  # Validation (ROADMAP - automated validation not yet implemented)
   check_duplicate_content: true
   validate_code_syntax: true
   validate_mermaid_diagrams: true
